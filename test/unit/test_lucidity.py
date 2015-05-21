@@ -20,7 +20,8 @@ def templates():
     '''Return candidate templates.'''
     return [
         lucidity.Template('model', '/jobs/{job.code}/assets/model/{lod}'),
-        lucidity.Template('rig', '/jobs/{job.code}/assets/rig/{rig_type}')
+        lucidity.Template('rig', '/jobs/{job.code}/assets/rig/{rig_type}'),
+        lucidity.Template('model_sandbox', '/jobs/{job.code}/assets/model/{lod}/sandbox')
     ]
 
 
@@ -74,6 +75,24 @@ def test_unsuccessfull_parse(templates):
         lucidity.parse('/not/matching', templates)
 
 
+@pytest.mark.parametrize(('path', 'expected'), [
+    ('/jobs/monty/assets/model/high/sandbox',
+     [{'job': {'code': 'monty'}, 'lod': 'high'}, {'job': {'code': 'monty'}, 'lod': 'high'}]),
+    ('/jobs/monty/assets/rig/anim',
+     [{'job': {'code': 'monty'}, 'rig_type': 'anim'}])
+], ids=[
+    'model',
+    'rig'
+])
+def test_successfull_parse_iter(path, expected, templates):
+    '''Parse path successfully against multiple candidate templates with parse_iter.'''
+    result = list(lucidity.parse_iter(path, templates))
+    for (data, template), expected_data in zip(result, expected):
+        assert data == expected_data
+
+    assert [x[0] for x in result] == expected
+
+
 @pytest.mark.parametrize(('data', 'expected'), [
     ({'job': {'code': 'monty'}, 'lod': 'high'},
      '/jobs/monty/assets/model/high'),
@@ -109,7 +128,7 @@ def test_unsuccessfull_format(data, templates):
 def test_get_template(templates):
     '''Retrieve template by name.'''
     template = lucidity.get_template('rig', templates)
-    assert template == templates[-1]
+    assert template == templates[1]
     assert template.name == 'rig'
 
 
