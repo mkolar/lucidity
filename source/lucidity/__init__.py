@@ -56,7 +56,7 @@ def discover_templates(paths=None, recursive=True):
 
 
 def parse(path, templates):
-    '''Parse *path* against *templates*.
+    '''Parse *path* against *templates* and return first correct match.
 
     *path* should be a string to parse.
 
@@ -81,6 +81,36 @@ def parse(path, templates):
         'Path {0!r} did not match any of the supplied template patterns.'
         .format(path)
     )
+
+
+def parse_iter(path, templates):
+    '''Parse *path* against *templates* and yields all matches.
+
+    *path* should be a string to parse.
+
+    *templates* should be a list of :py:class:`~lucidity.template.Template`
+    instances in the order that they should be tried.
+
+    Return ``(data, template)`` for each match in a list, like ``[(data, template), (data, template), ...]``.
+
+    Raise :py:class:`~lucidity.error.ParseError` if *path* is not
+    parseable by any of the supplied *templates*.
+    '''
+    has_match = False
+    for template in templates:
+        try:
+            data = template.parse(path)
+        except ParseError:
+            continue
+        else:
+            yield (data, template)
+            has_match = True
+
+    if not has_match:
+        raise ParseError(
+            'Path {0!r} did not match any of the supplied template patterns.'
+            .format(path)
+        )
 
 
 def format(data, templates):  # @ReservedAssignment
