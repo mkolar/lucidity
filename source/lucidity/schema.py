@@ -1,5 +1,6 @@
 import lucidity
 
+import lucidity.error
 
 class Schema(object):
     '''A schema.'''
@@ -54,3 +55,34 @@ class Schema(object):
     @property
     def templates(self):
         return self._templates
+
+    def map_iter(self, paths, other_schema):
+        ''' For each path parse it with this scheme and format it with the other schema and yield each result.
+
+        See: :py:function:`~luciditiy.get_template` for more information.
+        '''
+
+        result = []
+
+        for path in paths:
+            matches = self.parse_all(path)
+            for data, template in matches:
+                name = template.name
+                try:
+                    template = other_schema.get_template(name)
+                except lucidity.error.NotFound:
+                    continue
+
+                template.format(data)
+
+
+                results.append( () )
+
+            else:
+                raise lucidity.error.NotFound()
+
+
+
+
+    def map(self, *args, **kwargs):
+        return list(self.map_iter(*args, **kwargs))

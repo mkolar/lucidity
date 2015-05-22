@@ -70,18 +70,14 @@ def parse(path, templates):
     parseable by any of the supplied *templates*.
 
     '''
-    for template in templates:
-        try:
-            data = template.parse(path)
-        except ParseError:
-            continue
-        else:
-            return (data, template)
-
-    raise ParseError(
-        'Path {0!r} did not match any of the supplied template patterns.'
-        .format(path)
-    )
+    iter = parse_iter(path, templates)
+    try:
+        return next(iter)
+    except StopIteration:
+        raise ParseError(
+            'Path {0!r} did not match any of the supplied template patterns.'
+            .format(path)
+        )
 
 
 def parse_iter(path, templates):
@@ -92,12 +88,8 @@ def parse_iter(path, templates):
     *templates* should be a list of :py:class:`~lucidity.template.Template`
     instances in the order that they should be tried.
 
-    Return ``(data, template)`` for each match in a list, like ``[(data, template), (data, template), ...]``.
-
-    Raise :py:class:`~lucidity.error.ParseError` if *path* is not
-    parseable by any of the supplied *templates*.
+    Yield ``(data, template)`` for each match in a list.
     '''
-    has_match = False
     for template in templates:
         try:
             data = template.parse(path)
@@ -105,13 +97,6 @@ def parse_iter(path, templates):
             continue
         else:
             yield (data, template)
-            has_match = True
-
-    if not has_match:
-        raise ParseError(
-            'Path {0!r} did not match any of the supplied template patterns.'
-            .format(path)
-        )
 
 
 def format(data, templates):  # @ReservedAssignment
@@ -126,8 +111,26 @@ def format(data, templates):  # @ReservedAssignment
 
     Raise :py:class:`~lucidity.error.FormatError` if *data* is not
     formattable by any of the supplied *templates*.
+    '''
+    iter = format_iter(data, templates)
+    try:
+        return next(iter)
+    except StopIteration:
+        raise FormatError(
+            'Data {0!r} was not formattable by any of the supplied templates.'
+            .format(data)
+        )
 
 
+def format_iter(data, templates):  # @ReservedAssignment
+    '''Format *data* using *templates*.
+
+    *data* should be a dictionary of data to format into a path.
+
+    *templates* should be a list of :py:class:`~lucidity.template.Template`
+    instances in the order that they should be tried.
+
+    Yield ``(path, template)`` from each successful format.
     '''
     for template in templates:
         try:
@@ -135,12 +138,7 @@ def format(data, templates):  # @ReservedAssignment
         except FormatError:
             continue
         else:
-            return (path, template)
-
-    raise FormatError(
-        'Data {0!r} was not formattable by any of the supplied templates.'
-        .format(data)
-    )
+            yield (path, template)
 
 
 def get_template(name, templates):
