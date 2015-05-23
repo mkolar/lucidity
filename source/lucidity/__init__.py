@@ -8,7 +8,7 @@ import imp
 
 from ._version import __version__
 from .template import Template
-from .schema import  Schema
+from .schema import Schema
 from .error import ParseError, FormatError, NotFound
 
 

@@ -1,7 +1,7 @@
 import lucidity
 
 import lucidity.error
-
+import lucidity.vendor.yaml as yaml
 
 class Schema(object):
     '''A schema.'''
@@ -114,3 +114,49 @@ class Schema(object):
 
     def map(self, *args, **kwargs):
         return list(self.map_iter(*args, **kwargs))
+
+    @classmethod
+    def from_yaml(cls, filepath):
+        # TODO: Implement yaml parsing. See: test/fixture/schema.yaml and https://github.com/4degrees/lucidity/issues/20
+        with open(filepath, 'r') as f:
+            data = yaml.safe_load(f)
+
+        if not data:
+            return None
+
+        schema = cls()
+
+        # parse the paths from the yaml
+        if 'paths' in data:
+            for name, template_data in data['paths']:
+
+                # pattern
+                pattern = template_data['pattern']
+
+                # anchor
+                anchor = lucidity.Template.ANCHOR_START
+                if 'anchor' in template_data:
+                    anchor_raw = template_data['anchor']
+                    if anchor_raw == 'start':
+                        anchor = lucidity.Template.ANCHOR_START
+                    if anchor_raw == 'end':
+                        anchor = lucidity.Template.ANCHOR_BOTH
+                    if anchor_raw == 'both':
+                        anchor = lucidity.Template.ANCHOR_END
+
+                # mode
+                mode = lucidity.Template.RELAXED
+                if 'mode' in template_data:
+                    mode_raw = template_data['mode']
+                    if mode_raw == 'relaxed':
+                        mode = lucidity.Template.RELAXED
+                    if mode_raw == 'strict':
+                        mode = lucidity.Template.STRICT
+
+                template = lucidity.Template(name,
+                                             pattern,
+                                             anchor=anchor,
+                                             duplicate_placeholder_mode=mode)
+                schema.add_template(template)
+
+        return schema
