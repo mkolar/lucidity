@@ -31,12 +31,12 @@ class Schema(object):
 
         See: :py:function:`~luciditiy.parse` for more information.
         '''
-        return lucidity.parse(path, self._templates)
+        return lucidity.parse(path, self.templates)
 
     def parse_all(self, path):
         '''Parse *path* against all templates in this schema and returns a list of all matches.
 
-        This is similar to performing ``list(schema.parse_iter(path))``.
+        This is equivalent to performing ``list(schema.parse_iter(path))``.
         '''
         return list(self.parse_iter(path))
 
@@ -48,11 +48,25 @@ class Schema(object):
         return lucidity.parse_iter(path, self.templates)
 
     def format(self, data):
-        '''Format *data* using all templates in this schema.
+        '''Format *data* using the templates in this schema and return the first match.
 
         See: :py:function:`~luciditiy.format` for more information.
         '''
         return lucidity.format(data, self.templates)
+
+    def format_iter(self, data):
+        '''Format *data* using the templates in this schema and return the first match.
+
+        See: :py:function:`~luciditiy.format_iter` for more information.
+        '''
+        return lucidity.format_iter(data, self.templates)
+
+    def format_all(self, data):
+        '''Format *data* using the templates in this schema and return all matches.
+
+        This is equivalent to performing ``list(schema.format_iter(data))``.
+        '''
+        return list(self.format_iter(data))
 
     def get_template(self, name):
         '''Retrieve a template from *templates* by *name*.
