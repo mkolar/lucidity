@@ -14,6 +14,9 @@ TEST_TEMPLATE_PATH = os.path.join(
     os.path.dirname(__file__), '..', 'fixture', 'template'
 )
 
+TEST_SCHEMA_YAML_PATH = os.path.join(
+    os.path.dirname(__file__), '..', 'fixture', 'schema.yaml'
+)
 
 @pytest.fixture
 def templates():
@@ -28,3 +31,8 @@ def test_schema():
     '''Valid initializing.'''
     schema = lucidity.Schema(templates())
     assert isinstance(schema, lucidity.Schema)
+
+
+def test_schema_from_yaml():
+    '''Valid initializing from yaml'''
+    schema = lucidity.Schema.from_yaml(TEST_SCHEMA_YAML_PATH)
