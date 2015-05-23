@@ -57,7 +57,7 @@ def discover_templates(paths=None, recursive=True):
 
 
 def parse(path, templates):
-    '''Parse *path* against *templates* and return first correct match.
+    '''Parse *path* against *templates* and return first successful parse.
 
     *path* should be a string to parse.
 
@@ -81,7 +81,7 @@ def parse(path, templates):
 
 
 def parse_iter(path, templates):
-    '''Parse *path* against *templates* and yields all matches.
+    '''Parse *path* against *templates* and yield all successful parses.
 
     *path* should be a string to parse.
 
@@ -100,7 +100,7 @@ def parse_iter(path, templates):
 
 
 def format(data, templates):  # @ReservedAssignment
-    '''Format *data* using *templates*.
+    '''Format *data* using *templates* and return first successful format.
 
     *data* should be a dictionary of data to format into a path.
 
@@ -123,7 +123,7 @@ def format(data, templates):  # @ReservedAssignment
 
 
 def format_iter(data, templates):  # @ReservedAssignment
-    '''Format *data* using *templates*.
+    '''Format *data* using *templates* and yield all successful formats.
 
     *data* should be a dictionary of data to format into a path.
 
