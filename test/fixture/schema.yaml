@@ -9,33 +9,33 @@ paths:
   # Define common path definitions to use as shorthand in order to avoid repetitive and
   # verbose templates. This also makes it easy to change any of the common root paths
   # and have the changes apply to all templates that use them.
-  documents_root:
-    pattern: {project.name}/documents/
+  documents:
+    pattern: "{project.name}/documents/"
   asset_nested:
-    pattern: {asset.parent_group}/{asset.name}
+    pattern: "{asset.parent_group}/{asset.name}"
 
   # Nest path definitions to reduce this even further.
   asset_root:
-    pattern: {project.name}/assets/model/{@asset_nested}
+    pattern: "{project.name}/assets/model/{:asset_nested}"
   sequence_root:
-    pattern: {project.name}/assets/shots/{@asset_nested}
+    pattern: "{project.name}/assets/shots/{:asset_nested}"
   render_root:
-    pattern: {project.name}/assets/renders/{@asset_nested}
+    pattern: "{project.name}/assets/renders/{:asset_nested}"
 
   # Name with a readable and easily reusable prefix when there's many definition required
   # within a category to be clear with your path definitions.
   doc.contracts:
-    pattern: {@documents}/contracts/
+    pattern: "{:documents}/contracts/"
   doc.notes:
-    pattern: {@documents}/contracts/
+    pattern: "{:documents}/contracts/"
   doc.schedule:
-    pattern: {@documents}/schedule/
+    pattern: "{:documents}/schedule/"
   doc.brief:
-    pattern: {@documents}/brief/
+    pattern: "{:documents}/brief/"
 
   # You can also define additional settings for the template
   project_config:
-    pattern: {project.name}/backup/{project.name}.config
-    mode: strict
-    anchor: end
+    pattern: "{project.name}/backup/{project.name}.config"
+    mode: "strict"
+    anchor: "end"
 

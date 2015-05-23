@@ -122,7 +122,7 @@ class Schema(object):
 
     @classmethod
     def from_yaml(cls, filepath):
-        # TODO: Implement yaml parsing. See: test/fixture/schema.yaml and https://github.com/4degrees/lucidity/issues/20
+        # TODO: Implement yaml parsing. See: test/fixture/schema.yaml (#20)
         with open(filepath, 'r') as f:
             data = yaml.safe_load(f)
 
@@ -133,7 +133,7 @@ class Schema(object):
 
         # parse the paths from the yaml
         if 'paths' in data:
-            for name, template_data in data['paths']:
+            for name, template_data in data['paths'].iteritems():
 
                 # pattern
                 pattern = template_data['pattern']
