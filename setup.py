@@ -51,9 +51,6 @@ setup(
     package_dir={
         '': 'source'
     },
-    install_requires=[
-        'bunch >= 1.0.1'
-    ],
     tests_require=['pytest >= 2.3.5'],
     cmdclass={
         'test': PyTest

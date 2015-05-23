@@ -7,9 +7,9 @@ import re
 import copy
 from collections import defaultdict
 
-import bunch
-
+import lucidity
 import lucidity.error
+import lucidity.formatter
 
 # Type of a RegexObject for isinstance check.
 _RegexType = type(re.compile(''))
@@ -141,9 +141,8 @@ class Template(object):
         supply enough information to fill the template fields.
 
         '''
-        bunchified = bunch.bunchify(data)
         try:
-            path = self._format.format(**bunchified)
+            path = lucidity.formatter.Formatter().format(self._format, **data)
         except (AttributeError, KeyError) as error:
             raise lucidity.error.FormatError(
                 'Could not format data {0!r} due to missing key {1!r}.'
