@@ -1,0 +1,13 @@
+
+paths:
+
+  # Simple Pattern
+  documents:
+    pattern: "{project.name}/documents/"
+
+  # Nested
+  doc.contracts:
+    pattern: "{@documents}/contracts/"
+  doc.notes:
+    pattern: "{@documents}/notes/"
+
