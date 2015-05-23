@@ -1,0 +1,10 @@
+# TODO: Implement YAML schema formatting. See: https://github.com/4degrees/lucidity/issues/20
+
+paths:
+
+  rig:
+    pattern: '/jobs/{job.code}/assets/model/{lod}'
+  model:
+    pattern: '/jobs/{job.code}/assets/rig/{rig_type}'
+  model_sandbox:
+    pattern: '/jobs/{job.code}/assets/model/{lod}/sandbox'

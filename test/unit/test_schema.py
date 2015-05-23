@@ -14,8 +14,8 @@ TEST_TEMPLATE_PATH = os.path.join(
     os.path.dirname(__file__), '..', 'fixture', 'template'
 )
 
-TEST_SCHEMA_YAML_PATH = os.path.join(
-    os.path.dirname(__file__), '..', 'fixture', 'schema.yaml'
+TEST_FIXTURE_ROOT = os.path.join(
+    os.path.dirname(__file__), '..', 'fixture'
 )
 
 @pytest.fixture
@@ -35,4 +35,9 @@ def test_schema():
 
 def test_schema_from_yaml():
     '''Valid initializing from yaml'''
-    schema = lucidity.Schema.from_yaml(TEST_SCHEMA_YAML_PATH)
+    schema = lucidity.Schema.from_yaml(os.path.join(TEST_FIXTURE_ROOT, 'schema.yaml'))
+
+
+def test_schema_from_yaml_simple():
+    '''Valid initializing from yaml'''
+    schema = lucidity.Schema.from_yaml(os.path.join(TEST_FIXTURE_ROOT, 'schema_simple.yaml'))
