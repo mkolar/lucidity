@@ -3,8 +3,8 @@ paths:
 
   # Optional folder
   optional1:
-    pattern: "{project.name}/art/[var_{variation}/concept]"
+    pattern: "{project.name}/art/[var_{variation}/]concept"
 
   # Optional elements in filename
   optional2:
-    pattern: "{project.name}/model/{asset.name}[_{date}][_{varation}]_v{version:04d}.mb"
+    pattern: "{project.name}/model/{asset.name}[_{date}][_{variation}]_v{version:04d}.mb"

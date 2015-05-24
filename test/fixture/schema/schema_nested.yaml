@@ -3,11 +3,22 @@ paths:
 
   # Simple Pattern
   documents:
-    pattern: "{project.name}/documents/"
+    pattern: "{project.name}/documents"
 
   # Nested
   doc.contracts:
-    pattern: "{@documents}/contracts/"
+    pattern: "{@documents}/contracts"
   doc.notes:
-    pattern: "{@documents}/notes/"
+    pattern: "{@documents}/notes"
 
+  # 2 Nested
+  extensive:
+    pattern: "{code}/{@documents}/backup/{@doc.contracts}"
+
+  # 3 Nested, long
+  deepnest:
+    pattern: "{@extensive}/{@documents}/{@doc.notes}"
+
+  # 4 Nest only
+  nest:
+    pattern: "{@documents}"
