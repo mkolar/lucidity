@@ -70,6 +70,33 @@ def test_schema_from_yaml_optional(template_id, data, expected):
     assert path == expected
 
 
-def test_schema_from_yaml_nested():
+@pytest.mark.parametrize(('template_id', 'data', 'expected'), [
+    ('doc.notes',
+     {'project': {'name': 'foobar'}},
+     'foobar/documents/notes'),
+    ('doc.contracts',
+     {'project': {'name': 'transformers'}},
+     'transformers/documents/contracts'),
+    ('extensive',
+     {'project': {'name': 'swag'}, 'code': 'abc'},
+     'abc/swag/documents/backup/swag/documents/contracts'),
+    ('deepnest',
+     {'project': {'name': 'a'}, 'code': 'b'},
+     'b/a/documents/backup/a/documents/contracts/a/documents/a/documents/notes'),
+    ('nest',
+     {'project': {'name': 'abc'}},
+     'abc/documents')
+    ], ids=[
+            'doc.contracts (1 nested)',
+            'doc.notes (1 nested)',
+            'extensive (2 nested)',
+            'deepnest (3 nested, long)',
+            'nest (only 1 nest)'
+    ])
+def test_schema_from_yaml_nested(template_id, data, expected):
     '''Valid initializing from yaml'''
     schema = lucidity.Schema.from_yaml(os.path.join(TEST_SCHEMA_ROOT, 'schema_nested.yaml'))
+
+    template = schema.get_template(template_id)
+    path = template.format(data)
+    assert path == expected
