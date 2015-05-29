@@ -56,12 +56,15 @@ def discover_templates(paths=None, recursive=True):
     return templates
 
 
-def parse(path, templates):
+def parse(path, templates, template_resolver=None):
     '''Parse *path* against *templates* and return first successful parse.
 
     *path* should be a string to parse.
 
     *templates* should be a list of :py:class:`~lucidity.template.Template`
+    instances in the order that they should be tried.
+
+    *template_resolver* should be an object with a `get` method to retrieve template by name.
     instances in the order that they should be tried.
 
     Return ``(data, template)`` from first successful parse.
@@ -70,7 +73,7 @@ def parse(path, templates):
     parseable by any of the supplied *templates*.
 
     '''
-    iter = parse_iter(path, templates)
+    iter = parse_iter(path, templates, template_resolver)
     try:
         return next(iter)
     except StopIteration:
@@ -80,7 +83,7 @@ def parse(path, templates):
         )
 
 
-def parse_iter(path, templates):
+def parse_iter(path, templates, template_resolver=None):
     '''Parse *path* against *templates* and yield all successful parses.
 
     *path* should be a string to parse.
@@ -99,7 +102,7 @@ def parse_iter(path, templates):
             yield (data, template)
 
 
-def format(data, templates):  # @ReservedAssignment
+def format(data, templates, template_resolver=None):  # @ReservedAssignment
     '''Format *data* using *templates* and return first successful format.
 
     *data* should be a dictionary of data to format into a path.
@@ -112,7 +115,7 @@ def format(data, templates):  # @ReservedAssignment
     Raise :py:class:`~lucidity.error.FormatError` if *data* is not
     formattable by any of the supplied *templates*.
     '''
-    iter = format_iter(data, templates)
+    iter = format_iter(data, templates, template_resolver)
     try:
         return next(iter)
     except StopIteration:
@@ -122,7 +125,7 @@ def format(data, templates):  # @ReservedAssignment
         )
 
 
-def format_iter(data, templates):  # @ReservedAssignment
+def format_iter(data, templates, template_resolver=None):  # @ReservedAssignment
     '''Format *data* using *templates* and yield all successful formats.
 
     *data* should be a dictionary of data to format into a path.
