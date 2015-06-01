@@ -35,6 +35,7 @@ class Schema(dict):
         *template* must be a an instance of :py:class:`~lucidity.template.Template`.
         '''
         assert isinstance(template, lucidity.Template)
+        template.template_resolver = self
         self[template.name] = template
 
     def parse(self, path):
@@ -42,7 +43,7 @@ class Schema(dict):
 
         See: :py:function:`~luciditiy.parse` for more information.
         '''
-        return lucidity.parse(path, self.templates, template_resolver=self)
+        return lucidity.parse(path, self.templates)
 
     def parse_all(self, path):
         '''Parse *path* against all templates in this schema and returns a list of all matches.
@@ -56,21 +57,21 @@ class Schema(dict):
 
         See: :py:function:`~luciditiy.parse_iter` for more information.
         '''
-        return lucidity.parse_iter(path, self.templates, template_resolver=self)
+        return lucidity.parse_iter(path, self.templates)
 
     def format(self, data):
         '''Format *data* using the templates in this schema and return the first match.
 
         See: :py:function:`~luciditiy.format` for more information.
         '''
-        return lucidity.format(data, self.templates, template_resolver=self)
+        return lucidity.format(data, self.templates)
 
     def format_iter(self, data):
         '''Format *data* using the templates in this schema and return the first match.
 
         See: :py:function:`~luciditiy.format_iter` for more information.
         '''
-        return lucidity.format_iter(data, self.templates, template_resolver=self)
+        return lucidity.format_iter(data, self.templates)
 
     def format_all(self, data):
         '''Format *data* using the templates in this schema and return all matches.

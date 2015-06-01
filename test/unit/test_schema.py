@@ -93,9 +93,9 @@ def test_schema_from_yaml_optional(template_id, data, expected):
             'deepnest (3 nested, long)',
             'nest (only 1 nest)'
     ])
-def test_schema_from_yaml_nested(template_id, data, expected):
+def test_schema_from_yaml_referenced(template_id, data, expected):
     '''Valid initializing from yaml'''
-    schema = lucidity.Schema.from_yaml(os.path.join(TEST_SCHEMA_ROOT, 'schema_nested.yaml'))
+    schema = lucidity.Schema.from_yaml(os.path.join(TEST_SCHEMA_ROOT, 'schema_referenced.yaml'))
 
     template = schema.get_template(template_id)
     path = template.format(data)
