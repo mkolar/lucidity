@@ -18,6 +18,8 @@ class Schema(dict):
         Similar to the one returned from :py:function:`~luciditiy.discover_templates`.
         '''
         super(Schema, self).__init__()
+        self.references = {}
+        self.template_resolver = SchemaReferenceResolver(self)
         if templates is not None:
             assert isinstance(templates, list)
             for template in templates:
@@ -29,13 +31,24 @@ class Schema(dict):
         assert key == value.name
         super(Schema, self).__setitem__(key, value)
 
+    def add_reference(self, reference):
+        '''Add the *reference* to this Schema instance.
+
+        References are only used to resolve referenced keys in Templates and won't be used to parse/format against.
+
+        *reference* must be a an instance of :py:class:`~lucidity.template.Template`.
+        '''
+        assert isinstance(reference, lucidity.Template)
+        reference.template_resolver = self.template_resolver
+        self.references[reference.name] = reference
+
     def add_template(self, template):
         '''Add the *template* to this Schema instance.
 
         *template* must be a an instance of :py:class:`~lucidity.template.Template`.
         '''
         assert isinstance(template, lucidity.Template)
-        template.template_resolver = self
+        template.template_resolver = self.template_resolver
         self[template.name] = template
 
     def parse(self, path):
@@ -160,7 +173,6 @@ class Schema(dict):
             for key, value in data['defaults'].iteritems():
                 defaults[key] = conversions[key][value]
 
-        # parse the paths from the yaml
         if 'paths' in data:
             for name, template_data in data['paths'].iteritems():
 
@@ -185,4 +197,28 @@ class Schema(dict):
                                              duplicate_placeholder_mode=mode)
                 schema.add_template(template)
 
+        if 'references' in data:
+            for name, pattern in data['references'].iteritems():
+                template = lucidity.Template(name, pattern)
+                schema.add_reference(template)
+
         return schema
+
+
+class SchemaReferenceResolver(lucidity.Resolver):
+    def __init__(self, schema):
+        assert isinstance(schema, Schema)
+        self.schema = schema
+
+    def get(self, template_name, default=None):
+        # Retrieve Templates first
+        template = self.schema.get(template_name, None)
+        if template:
+            return template
+
+        # If no Template found with that name, check if we have a reference Template
+        template = self.schema.references.get(template_name, None)
+        if template:
+            return template
+
+        return None
