@@ -129,14 +129,36 @@ class Schema(dict):
 
     @classmethod
     def from_yaml(cls, filepath):
-        # TODO: Implement yaml parsing. See: test/fixture/schema.yaml (#20)
+        ''' Parse a Schema from a YAML file at the given *filepath*.
+
+        Parsing from a Schema from YAML loads all paths as templates and also supports
+        setting a separate default for all paths in the schema.
+
+        Return ``lucidity.schema.Schema`` initialized with all path templates defined in the YAML file.
+        '''
         with open(filepath, 'r') as f:
             data = yaml.safe_load(f)
 
         if not data:
             return None
 
+        convert_anchor = {'start': lucidity.Template.ANCHOR_START,
+                          'both': lucidity.Template.ANCHOR_BOTH,
+                          'end': lucidity.Template.ANCHOR_END}
+        convert_mode = {'relaxed': lucidity.Template.ANCHOR_START,
+                        'strict': lucidity.Template.ANCHOR_BOTH}
+
+        conversions = {'anchor': convert_anchor,
+                       'mode': convert_mode}
+
+        defaults = {'anchor': lucidity.Template.ANCHOR_START,
+                    'mode': lucidity.Template.RELAXED}
+
         schema = cls()
+
+        if 'defaults' in data:
+            for key, value in data['defaults'].iteritems():
+                defaults[key] = conversions[key][value]
 
         # parse the paths from the yaml
         if 'paths' in data:
@@ -146,24 +168,16 @@ class Schema(dict):
                 pattern = template_data['pattern']
 
                 # anchor
-                anchor = lucidity.Template.ANCHOR_START
+                anchor = defaults['anchor']
                 if 'anchor' in template_data:
                     anchor_raw = template_data['anchor']
-                    if anchor_raw == 'start':
-                        anchor = lucidity.Template.ANCHOR_START
-                    if anchor_raw == 'end':
-                        anchor = lucidity.Template.ANCHOR_BOTH
-                    if anchor_raw == 'both':
-                        anchor = lucidity.Template.ANCHOR_END
+                    anchor = conversions['anchor'][anchor_raw]
 
                 # mode
-                mode = lucidity.Template.RELAXED
+                mode = defaults['mode']
                 if 'mode' in template_data:
                     mode_raw = template_data['mode']
-                    if mode_raw == 'relaxed':
-                        mode = lucidity.Template.RELAXED
-                    if mode_raw == 'strict':
-                        mode = lucidity.Template.STRICT
+                    mode = conversions['mode'][mode_raw]
 
                 template = lucidity.Template(name,
                                              pattern,
