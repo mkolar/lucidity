@@ -2,10 +2,9 @@
 # :copyright: Copyright (c) 2013 Martin Pengelly-Phillips
 # :license: See LICENSE.txt.
 
-import lucidity
-
-import lucidity.error
-import lucidity.vendor.yaml as yaml
+from . import Template, Resolver, parse, parse_iter, format, format_iter
+from . import error
+from .vendor import yaml
 
 
 class Schema(dict):
@@ -27,7 +26,7 @@ class Schema(dict):
 
     def __setitem__(self, key, value):
         # Ensure we only assign templates to this schema.
-        assert isinstance(value, lucidity.Template)
+        assert isinstance(value, Template)
         assert key == value.name
         super(Schema, self).__setitem__(key, value)
 
@@ -38,7 +37,7 @@ class Schema(dict):
 
         *reference* must be a an instance of :py:class:`~lucidity.template.Template`.
         '''
-        assert isinstance(reference, lucidity.Template)
+        assert isinstance(reference, Template)
         reference.template_resolver = self.template_resolver
         self.references[reference.name] = reference
 
@@ -47,7 +46,7 @@ class Schema(dict):
 
         *template* must be a an instance of :py:class:`~lucidity.template.Template`.
         '''
-        assert isinstance(template, lucidity.Template)
+        assert isinstance(template, Template)
         template.template_resolver = self.template_resolver
         self[template.name] = template
 
@@ -56,7 +55,7 @@ class Schema(dict):
 
         See: :py:function:`~luciditiy.parse` for more information.
         '''
-        return lucidity.parse(path, self.templates)
+        return parse(path, self.templates)
 
     def parse_all(self, path):
         '''Parse *path* against all templates in this schema and returns a list of all matches.
@@ -70,21 +69,21 @@ class Schema(dict):
 
         See: :py:function:`~luciditiy.parse_iter` for more information.
         '''
-        return lucidity.parse_iter(path, self.templates)
+        return parse_iter(path, self.templates)
 
     def format(self, data):
         '''Format *data* using the templates in this schema and return the first match.
 
         See: :py:function:`~luciditiy.format` for more information.
         '''
-        return lucidity.format(data, self.templates)
+        return format(data, self.templates)
 
     def format_iter(self, data):
         '''Format *data* using the templates in this schema and return the first match.
 
         See: :py:function:`~luciditiy.format_iter` for more information.
         '''
-        return lucidity.format_iter(data, self.templates)
+        return format_iter(data, self.templates)
 
     def format_all(self, data):
         '''Format *data* using the templates in this schema and return all matches.
@@ -120,12 +119,12 @@ class Schema(dict):
                 name = original_template.name
                 try:
                     other_template = other_schema.get_template(name)
-                except lucidity.error.NotFound:
+                except error.NotFound:
                     continue
 
                 try:
                     other_path = other_template.format(data)
-                except lucidity.error.FormatError:
+                except error.FormatError:
                     continue
 
                 yield (data,
@@ -135,7 +134,7 @@ class Schema(dict):
                        other_template)
 
             else:
-                raise lucidity.error.NotFound()
+                raise error.NotFound()
 
     def map(self, *args, **kwargs):
         return list(self.map_iter(*args, **kwargs))
@@ -155,17 +154,17 @@ class Schema(dict):
         if not data:
             return None
 
-        convert_anchor = {'start': lucidity.Template.ANCHOR_START,
-                          'both': lucidity.Template.ANCHOR_BOTH,
-                          'end': lucidity.Template.ANCHOR_END}
-        convert_mode = {'relaxed': lucidity.Template.ANCHOR_START,
-                        'strict': lucidity.Template.ANCHOR_BOTH}
+        convert_anchor = {'start': Template.ANCHOR_START,
+                          'both': Template.ANCHOR_BOTH,
+                          'end': Template.ANCHOR_END}
+        convert_mode = {'relaxed': Template.ANCHOR_START,
+                        'strict': Template.ANCHOR_BOTH}
 
         conversions = {'anchor': convert_anchor,
                        'mode': convert_mode}
 
-        defaults = {'anchor': lucidity.Template.ANCHOR_START,
-                    'mode': lucidity.Template.RELAXED}
+        defaults = {'anchor': Template.ANCHOR_START,
+                    'mode': Template.RELAXED}
 
         schema = cls()
 
@@ -191,7 +190,7 @@ class Schema(dict):
                     mode_raw = template_data['mode']
                     mode = conversions['mode'][mode_raw]
 
-                template = lucidity.Template(name,
+                template = Template(name,
                                              pattern,
                                              anchor=anchor,
                                              duplicate_placeholder_mode=mode)
@@ -199,13 +198,13 @@ class Schema(dict):
 
         if 'references' in data:
             for name, pattern in data['references'].iteritems():
-                template = lucidity.Template(name, pattern)
+                template = Template(name, pattern)
                 schema.add_reference(template)
 
         return schema
 
 
-class SchemaReferenceResolver(lucidity.Resolver):
+class SchemaReferenceResolver(Resolver):
     def __init__(self, schema):
         assert isinstance(schema, Schema)
         self.schema = schema

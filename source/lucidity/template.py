@@ -8,7 +8,7 @@ import re
 import functools
 from collections import defaultdict
 
-import lucidity.error
+from . import error
 
 # Type of a RegexObject for isinstance check.
 _RegexType = type(re.compile(''))
@@ -96,14 +96,14 @@ class Template(object):
         reference = match.group('reference')
 
         if self.template_resolver is None:
-            raise lucidity.error.ResolveError(
+            raise error.ResolveError(
                 'Failed to resolve reference {0!r} as no template resolver set.'
                 .format(reference)
             )
 
         template = self.template_resolver.get(reference)
         if template is None:
-            raise lucidity.error.ResolveError(
+            raise error.ResolveError(
                 'Failed to resolve reference {0!r} using template resolver.'
                 .format(reference)
             )
@@ -135,7 +135,7 @@ class Template(object):
                 if self.duplicate_placeholder_mode == self.STRICT:
                     if key in parsed:
                         if parsed[key] != value:
-                            raise lucidity.error.ParseError(
+                            raise error.ParseError(
                                 'Different extracted values for placeholder '
                                 '{0!r} detected. Values were {1!r} and {2!r}.'
                                 .format(key, parsed[key], value)
@@ -155,11 +155,11 @@ class Template(object):
             return data
 
         else:
-            raise lucidity.error.ParseError(
+            raise error.ParseError(
                 'Path {0!r} did not match template pattern.'.format(path)
             )
 
-    def format(self, data):
+    def format(self, data, allow_partial=True):
         '''Return a path formatted by applying *data* to this template.
 
         Raise :py:class:`~lucidity.error.FormatError` if *data* does not
@@ -172,7 +172,7 @@ class Template(object):
         )
 
         return self._PLAIN_PLACEHOLDER_REGEX.sub(
-            functools.partial(self._format, data=data),
+            functools.partial(self._format, data=data, allow_partial=allow_partial),
             format_specification
         )
 
@@ -187,7 +187,7 @@ class Template(object):
                 value = value[part]
 
         except (TypeError, KeyError):
-            raise lucidity.error.FormatError(
+            raise error.FormatError(
                 'Could not format data {0!r} due to missing key {1!r}.'
                 .format(data, placeholder)
             )
