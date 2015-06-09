@@ -140,19 +140,19 @@ class Schema(dict):
         return list(self.map_iter(*args, **kwargs))
 
     @classmethod
-    def from_yaml(cls, filepath):
-        ''' Parse a Schema from a YAML file at the given *filepath*.
+    def from_dict(cls, data):
+        """ Instantiate a schema pre-loaded with the *data* dictionary.
 
-        Parsing from a Schema from YAML loads all paths as templates and also supports
-        setting a separate default for all paths in the schema.
+        Instantiate a Schema from a dictionary loading all `paths` as templates
+        Also supports setting a separate default for all paths in the schema using `defaults`.
 
-        Return ``lucidity.schema.Schema`` initialized with all path templates defined in the YAML file.
-        '''
-        with open(filepath, 'r') as f:
-            data = yaml.safe_load(f)
+        Return ``lucidity.schema.Schema`` initialized with all path templates defined in the *data* dictionary.
+        """
+
+        schema = cls()
 
         if not data:
-            return None
+            return schema
 
         convert_anchor = {'start': Template.ANCHOR_START,
                           'both': Template.ANCHOR_BOTH,
@@ -165,8 +165,6 @@ class Schema(dict):
 
         defaults = {'anchor': Template.ANCHOR_START,
                     'mode': Template.RELAXED}
-
-        schema = cls()
 
         if 'defaults' in data:
             for key, value in data['defaults'].iteritems():
@@ -202,6 +200,18 @@ class Schema(dict):
                 schema.add_reference(template)
 
         return schema
+
+
+    @classmethod
+    def from_yaml(cls, filepath):
+        ''' Parse a Schema from a YAML file at the given *filepath*.
+
+        Return ``lucidity.schema.Schema`` initialized with all path templates defined in the YAML file.
+        '''
+        with open(filepath, 'r') as f:
+            data = yaml.safe_load(f)
+
+        return cls.from_dict(data)
 
 
 class SchemaReferenceResolver(Resolver):
