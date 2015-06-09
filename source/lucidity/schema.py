@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2013 Martin Pengelly-Phillips
 # :license: See LICENSE.txt.
 
-from . import Template, Resolver, parse, parse_iter, format, format_iter
+from . import Template, Resolver
 from . import error
 from .vendor import yaml
 

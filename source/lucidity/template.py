@@ -159,7 +159,7 @@ class Template(object):
                 'Path {0!r} did not match template pattern.'.format(path)
             )
 
-    def format(self, data, allow_partial=True):
+    def format(self, data):
         '''Return a path formatted by applying *data* to this template.
 
         Raise :py:class:`~lucidity.error.FormatError` if *data* does not
@@ -172,7 +172,7 @@ class Template(object):
         )
 
         return self._PLAIN_PLACEHOLDER_REGEX.sub(
-            functools.partial(self._format, data=data, allow_partial=allow_partial),
+            functools.partial(self._format, data=data),
             format_specification
         )
 
