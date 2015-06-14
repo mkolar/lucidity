@@ -5,6 +5,7 @@
 from . import Template, Resolver
 from . import error
 from .vendor import yaml
+from .core import *
 
 
 class Schema(dict):
